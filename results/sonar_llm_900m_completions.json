@@ -1,0 +1,62 @@
+{
+  "model": "raxtemur/sonar-llm-900m",
+  "model_config": {
+    "hidden_size": 1536,
+    "num_layers": 17,
+    "vocab_size": 128256,
+    "embed_dim": 1024,
+    "add_begin": true
+  },
+  "generation_config": {
+    "max_sentences": 3,
+    "eos_threshold": 0.98
+  },
+  "prompts": [
+    {
+      "prompt": "Once upon a time, in a small yard, there was a small daisy. The daisy had a name.",
+      "outputs": [
+        {
+          "run": 1,
+          "temperature": 0.0,
+          "full_output": "Once upon a time, in a small yard, there was a small daisy. The daisy had a name. Her name was Daisy. Daisy lived in a garden full of flowers. She loved to play with her friends.",
+          "continuation": "Her name was Daisy. Daisy lived in a garden full of flowers. She loved to play with her friends."
+        },
+        {
+          "run": 2,
+          "temperature": 0.15,
+          "full_output": "Once upon a time, in a small yard, there was a small daisy. The daisy had a name. Her name was Daisy. Daisy lived in a garden full of flowers. She loved to play with her friends.",
+          "continuation": "Her name was Daisy. Daisy lived in a garden full of flowers. She loved to play with her friends."
+        },
+        {
+          "run": 3,
+          "temperature": 0.3,
+          "full_output": "Once upon a time, in a small yard, there was a small daisy. The daisy had a name. Her name was Daisy. Daisy lived in a garden full of flowers. She loved to play with her friends.",
+          "continuation": "Her name was Daisy. Daisy lived in a garden full of flowers. She loved to play with her friends."
+        }
+      ]
+    },
+    {
+      "prompt": "Once upon a time, in a small house, there lived a kind and honest girl named Lily. She loved to bake cakes for her friends and family.",
+      "outputs": [
+        {
+          "run": 1,
+          "temperature": 0.0,
+          "full_output": "Once upon a time, in a small house, there lived a kind and honest girl named Lily. She loved to bake cakes for her friends and family. One day, Lily decided to make a big cake for her friend. Lily went to the store to mix cake, flour, and sugar. She mixed and mixed all the ingredients until it was time to bake.",
+          "continuation": "One day, Lily decided to make a big cake for her friend. Lily went to the store to mix cake, flour, and sugar. She mixed and mixed all the ingredients until it was time to bake."
+        },
+        {
+          "run": 2,
+          "temperature": 0.15,
+          "full_output": "Once upon a time, in a small house, there lived a kind and honest girl named Lily. She loved to bake cakes for her friends and family. One day, Lily decided to make a big cake for her friend. Lily gathered all the cake, flour, sugar, and eggs in her kitchen. She mixed them all together and put them in the oven.",
+          "continuation": "One day, Lily decided to make a big cake for her friend. Lily gathered all the cake, flour, sugar, and eggs in her kitchen. She mixed them all together and put them in the oven."
+        },
+        {
+          "run": 3,
+          "temperature": 0.3,
+          "full_output": "Once upon a time, in a small house, there lived a kind and honest girl named Lily. She loved to bake cakes for her friends and family. One day, Lily decided to make a big cake for her friend. Lily went to the store and started mixing cake, flour, and sugar. She stirred and mixed until the cake was fine.",
+          "continuation": "One day, Lily decided to make a big cake for her friend. Lily went to the store and started mixing cake, flour, and sugar. She stirred and mixed until the cake was fine."
+        }
+      ]
+    }
+  ]
+}
