@@ -121,16 +121,3 @@ def run_multi_init_experiments(
                 print(f"SUCCESS: {result['success']}\n")
     return results
 
-
-def run_lily_story_experiments(
-    sonar: SonarWrapper,
-    generator: SonarLLMGenerator,
-    init_text: str = "I like cheese.",
-    n_steps: int = 100,
-    lr: float = 0.01,
-    verbose: bool = True,
-) -> list[dict]:
-    """Run experiments for each sentence in the Lily story."""
-    import nltk
-    sentences = nltk.sent_tokenize(LILY_STORY)
-    return run_multi_init_experiments(sentences, [init_text], sonar, generator, n_steps, lr, verbose)
