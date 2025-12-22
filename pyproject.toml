@@ -1,37 +1,33 @@
 [project]
 name = "prompt-interp"
 version = "0.1.0"
-description = "Add your description here"
+description = "SONAR-LLM experiments - sentence-level language modeling"
 readme = "README.md"
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.12,<3.13"
 dependencies = [
-    "torch==2.8.0",
-    "transformers>=4.57.1",
-    "datasets>=2.14.0",
-    "accelerate>=0.24.0",
-    "sentencepiece>=0.1.99",
-    "protobuf>=3.20.0",
-    "matplotlib>=3.10.7",
-    "peft>=0.18.0",
-    "custom-dreamy",
-    "llada",
-    "pydantic>=2.12.4",
-    "openai>=2.8.0",
-    "wandb>=0.23.0",
-    "einops>=0.8.1",
-    "jaxtyping>=0.3.3",
-    "plotly>=6.4.0",
+    "torch>=2.8.0",
     "sonar-space>=0.5.0",
-    "fairseq2>=0.5.2",
-    "scipy>=1.15.3",
-    "ipykernel>=7.1.0",
-    "nltk>=3.9.2",
+    "nltk>=3.8",
+    "transformers>=4.40.0",
+    "safetensors>=0.4.0",
+    "huggingface-hub>=0.20.0",
+    "datasets>=4.4.2",
 ]
 
 [build-system]
 requires = ["uv_build>=0.9.7,<0.10.0"]
 build-backend = "uv_build"
 
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[[tool.uv.index]]
+name = "fairseq2"
+url = "https://fair.pkg.atmeta.com/fairseq2/whl/pt2.8.0/cu126"
+explicit = true
+
 [tool.uv.sources]
-custom-dreamy = { path = "../context-bench/external/custom_dreamy", editable = true }
-llada = { path = "../context-bench/external/llada", editable = true }
+torch = { index = "pytorch-cu126" }
+fairseq2 = { index = "fairseq2" }

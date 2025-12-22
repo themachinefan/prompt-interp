@@ -1,0 +1,56 @@
+{
+  "900M_TinyStories": [
+    {
+      "prompt": "Once upon a time, there was a little girl named Lily.",
+      "completion": "She loved to play outside with her toys. One day, she saw a big tree in the sky. She wanted to climb it, but it was too high. Lily asked her mom to help her climb the tree. Her mom said, \"No, you can't climb the tree. It's too high.\" Lily was sad because she wanted to climb the tree. Later that day, Lily's mom told her that she could climb the tree.",
+      "full_output": "Once upon a time, there was a little girl named Lily. She loved to play outside with her toys. One day, she saw a big tree in the sky. She wanted to climb it, but it was too high. Lily asked her mom to help her climb the tree. Her mom said, \"No, you can't climb the tree. It's too high.\" Lily was sad because she wanted to climb the tree. Later that day, Lily's mom told her that she could climb the tree."
+    },
+    {
+      "prompt": "Tom had a red ball. He liked to play in the park.",
+      "completion": "He liked to throw the ball and run the ball. He liked to throw balls at his friends. He liked to throw balls at them. One day, he saw a new kid in the park. He had a small ball. It was red and blue. Tom wanted to play with it. He ran to the new kid and said, \"Hi, I am Tom.",
+      "full_output": "Tom had a red ball. He liked to play in the park. He liked to throw the ball and run the ball. He liked to throw balls at his friends. He liked to throw balls at them. One day, he saw a new kid in the park. He had a small ball. It was red and blue. Tom wanted to play with it. He ran to the new kid and said, \"Hi, I am Tom."
+    },
+    {
+      "prompt": "The dog was very hungry. He looked for food everywhere.",
+      "completion": "But he couldn't find anything. He was so sad. Suddenly, he heard a noise. He looked around and saw a dog. The dog was very happy. He ran over to the dog and asked him if he wanted to eat. The dog said yes. The dog gave the dog some food.",
+      "full_output": "The dog was very hungry. He looked for food everywhere. But he couldn't find anything. He was so sad. Suddenly, he heard a noise. He looked around and saw a dog. The dog was very happy. He ran over to the dog and asked him if he wanted to eat. The dog said yes. The dog gave the dog some food."
+    },
+    {
+      "prompt": "Sara found a magic key in the garden.",
+      "completion": "She was very curious and wondered what it could unlock. She looked around the garden and saw a big door that didn't work. She put the key in the door and tried to unlock it. It didn't work! She was sad and then she tried again. This time, she turned the key and the door opened. Sara was so excited! She opened the door and saw a beautiful garden.",
+      "full_output": "Sara found a magic key in the garden. She was very curious and wondered what it could unlock. She looked around the garden and saw a big door that didn't work. She put the key in the door and tried to unlock it. It didn't work! She was sad and then she tried again. This time, she turned the key and the door opened. Sara was so excited! She opened the door and saw a beautiful garden."
+    },
+    {
+      "prompt": "One sunny morning, Ben woke up early.",
+      "completion": "He jumped out of his window and saw the sun shining. He jumped out of bed and ran outside. He saw the sun shining in the sky. Ben jumped up and smiled. He wanted to go out and play with his friends. He put on his shoes and ran outside. He saw his friends playing in the park. They were running around and having fun.",
+      "full_output": "One sunny morning, Ben woke up early. He jumped out of his window and saw the sun shining. He jumped out of bed and ran outside. He saw the sun shining in the sky. Ben jumped up and smiled. He wanted to go out and play with his friends. He put on his shoes and ran outside. He saw his friends playing in the park. They were running around and having fun."
+    }
+  ],
+  "1.3B_Textbooks": [
+    {
+      "prompt": "Chapter 1: Introduction to Biology. Biology is the study of living organisms.",
+      "completion": "It is the study of organisms that live, interact, and interact with each other. In this chapter, we will explore the basics of biology, including its structure, structure, and function. Section 1: Biology. Biology is the study of living organisms. It includes the study of living organisms, such as plants, animals, insects, and other organisms. In this section, we will explore the basic principles of biology, including the structure, structure, and function of living organisms. Section 2: Biology. Biology is the study of living organisms.",
+      "full_output": "Chapter 1: Introduction to Biology. Biology is the study of living organisms. It is the study of organisms that live, interact, and interact with each other. In this chapter, we will explore the basics of biology, including its structure, structure, and function. Section 1: Biology. Biology is the study of living organisms. It includes the study of living organisms, such as plants, animals, insects, and other organisms. In this section, we will explore the basic principles of biology, including the structure, structure, and function of living organisms. Section 2: Biology. Biology is the study of living organisms."
+    },
+    {
+      "prompt": "The water cycle is an important process in nature. Water evaporates from oceans and lakes.",
+      "completion": "The water evaporates into the atmosphere. Eventually, the water evaporates into the atmosphere. Eventually, the water evaporates into the atmosphere. End of sequence.",
+      "full_output": "The water cycle is an important process in nature. Water evaporates from oceans and lakes. The water evaporates into the atmosphere. Eventually, the water evaporates into the atmosphere. Eventually, the water evaporates into the atmosphere. End of sequence."
+    },
+    {
+      "prompt": "Photosynthesis is how plants make food. They use sunlight, water, and carbon dioxide.",
+      "completion": "This process is known as photosynthesis. The process of photosynthesis is called photosynthesis. Photosynthesis is the process by which photosynthesis takes place. Photosynthesis is the process by which photosynthesis takes place. Photosynthesis is the process by which photosynthesis takes place. Photosynthesis is the process by which photosynthesis takes place. Photosynthesis is the process by which photosynthesis takes place. End of photosynthesis.",
+      "full_output": "Photosynthesis is how plants make food. They use sunlight, water, and carbon dioxide. This process is known as photosynthesis. The process of photosynthesis is called photosynthesis. Photosynthesis is the process by which photosynthesis takes place. Photosynthesis is the process by which photosynthesis takes place. Photosynthesis is the process by which photosynthesis takes place. Photosynthesis is the process by which photosynthesis takes place. Photosynthesis is the process by which photosynthesis takes place. End of photosynthesis."
+    },
+    {
+      "prompt": "The solar system consists of the Sun and eight planets.",
+      "completion": "The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets.",
+      "full_output": "The solar system consists of the Sun and eight planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets. The solar system is composed of the Sun, the Moon, and the planets."
+    },
+    {
+      "prompt": "In mathematics, addition is a basic operation.",
+      "completion": "Additionally, the sum of two numbers is equal to the sum of two numbers. End of sequence.",
+      "full_output": "In mathematics, addition is a basic operation. Additionally, the sum of two numbers is equal to the sum of two numbers. End of sequence."
+    }
+  ]
+}
