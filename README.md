@@ -40,3 +40,11 @@ Install dependencies:
 ```bash
 uv sync
 ```
+
+
+Ideas to try:
+ - [done] Add perplexity term.
+ - PCA with different learning rates.
+
+
+ - Test is jailbreaks transfer to normal TinyStories models
