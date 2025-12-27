@@ -110,7 +110,8 @@ def run_next_sentence_experiment(
         roundtrip_l2 = (z_proj - z_reencoded).norm().item()
         roundtrip_cos = F.cosine_similarity(z_proj.view(-1), z_reencoded.view(-1), dim=0).item()
 
-        loss = pred_loss + perplexity_weight * z_ppl_loss
+        ppl_weight = perplexity_weight * (step / (n_steps - 1)) if n_steps > 1 else perplexity_weight
+        loss = pred_loss + ppl_weight * z_ppl_loss
 
         # Cosine similarity for logging (use original z, not noised)
         pred_emb = pred_emb_last[0:1]  # (1, 1, 1024)
@@ -213,7 +214,7 @@ run_next_sentence_experiment(
     n_noise_samples=63,
     noise_level=0.06,
     # noise_level=0.09,
-    perplexity_weight=0.0,
+    perplexity_weight=0.1,
     verbose=True,
 )
 
