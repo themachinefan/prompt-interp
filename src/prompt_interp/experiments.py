@@ -1,8 +1,11 @@
 #%%
 """Experiments for finding embeddings that elicit specific next-sentence predictions."""
 
+import os
 import torch
 import torch.nn.functional as F
+from dotenv import load_dotenv
+from openai import OpenAI
 
 from prompt_interp.sonar_wrapper import SonarWrapper
 from prompt_interp.generator import SonarLLMGenerator
@@ -13,6 +16,50 @@ from prompt_interp.optimize import (
     tokenize_for_decoder,
     LILY_STORY,
 )
+
+# Load API key from .env file (create .env with OPENAI_API_KEY=sk-...)
+load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+
+def rephrase_with_llm(text: str, client: OpenAI | None) -> str:
+    """
+    Use GPT-5.2 to rephrase text into correct English while preserving semantics.
+    Returns original text if client is None or on error.
+    """
+    if client is None:
+        return text
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-5.2-chat-latest",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a text correction assistant. The input may be garbled, contain "
+                        "random punctuation, incomplete words, or nonsensical fragments. Your task is to:\n"
+                        "1. Remove stray punctuation like ), \", ', etc.\n"
+                        "2. Fix incomplete or garbled words\n"
+                        "3. Delete pointless or nonsensical repetitions (e.g. 'shop shop shop shop' -> 'shop') (eg. 'Lygia wanted to buy eggs for eggs' -> 'Lygia wanted to buy eggs' \n"
+                        "4. Make it a somewhat coherent, grammatically correct English sentence\n"
+                        "5. Keep the meaning and wording as close to the original as possible while editing it to be correct English\n"
+                        "Return ONLY the corrected sentence, nothing else. If the input is already "
+                        "correct, return it unchanged."
+                    ),
+                },
+                {"role": "user", "content": f"Fix this text: {text}"},
+            ],
+            max_completion_tokens=256,
+        )
+        result = response.choices[0].message.content
+        if result:
+            result = result.strip()
+        # Fall back to original if LLM returns empty
+        return result if result else text
+    except Exception as e:
+        print(f"    [LLM rephrase failed: {e}]")
+        return text
 
 
 def add_noise_with_projection(z: torch.Tensor, noise_level: float) -> torch.Tensor:
@@ -65,13 +112,24 @@ def run_next_sentence_experiment(
     noise_level: float = 0.03,
     perplexity_weight: float = 0.0,
     accum_steps: int = 1,
+    use_llm_rephrase: bool = False,
 ) -> dict:
     """
     Find z such that SONAR-LLM([z, context...]) predicts target_text at the final position.
 
     Sequence structure: [z (optimized), context_0, context_1, ...] -> SONAR-LLM -> predictions
     We optimize z so that the prediction at the LAST position decodes to target_text.
+
+    Args:
+        use_llm_rephrase: If True, use GPT-5.2 to correct decoded_z before re-encoding.
     """
+    # Initialize OpenAI client if LLM rephrasing is enabled
+    openai_client: OpenAI | None = None
+    if use_llm_rephrase:
+        if not OPENAI_API_KEY:
+            raise ValueError("Set OPENAI_API_KEY in .env file to use LLM rephrasing")
+        openai_client = OpenAI(api_key=OPENAI_API_KEY)
+
     context_sents = sonar_wrapper.segment(context_text) if context_text else []
 
     # Encode embeddings
@@ -152,8 +210,9 @@ def run_next_sentence_experiment(
             if should_log:
                 decoded_after_proj: str = sonar_wrapper.decode(z.squeeze(1))[0]
 
-            # Roundtrip: decode then encode
-            decoded_z = sonar_wrapper.decode(z.squeeze(1))[0]
+            # Roundtrip: decode, optionally rephrase with LLM, then encode
+            decoded_z_raw: str = sonar_wrapper.decode(z.squeeze(1))[0]
+            decoded_z = rephrase_with_llm(decoded_z_raw, openai_client)
             z.data = sonar_wrapper.encode([decoded_z]).unsqueeze(1)
 
         # Log state after update
@@ -164,6 +223,8 @@ def run_next_sentence_experiment(
                 verbose=False,  # We'll print manually to include intermediate stages
             )
             z_perplexity: float = torch.exp(z_ppl_loss).item()
+            # Track LLM rephrasing for logging
+            llm_changed: bool = decoded_z_raw != decoded_z
             total_loss = total_pred_loss + ppl_weight * z_ppl_loss.item()
 
             trajectory.append({
@@ -181,6 +242,9 @@ def run_next_sentence_experiment(
                 print(f"Step {step:3d} | pred_loss={total_pred_loss:.3f} | z_ppl={z_perplexity:.1f} | sim={cos_sim:.3f}")
                 print(f"    after opt:     \"{decoded_after_opt}\"")
                 print(f"    after proj:    \"{decoded_after_proj}\"")
+                if use_llm_rephrase:
+                    print(f"    before LLM:    \"{decoded_z_raw}\"")
+                    print(f"    after LLM:     \"{decoded_z}\"" + (" (changed)" if llm_changed else " (unchanged)"))
                 print(f"    after re-enc:  \"{decoded_after_enc}\"")
                 print(f"    prediction:    \"{decoded_pred}\"\n")
 
@@ -220,19 +284,20 @@ for p in generator.parameters():
 run_next_sentence_experiment(
     init_text="I like cheese.",
     # context_text="She is going to the shop to buy eggs",
-    # target_text="She went to the shop to buy eggs",
+    # target_text="She went to the shop to buy eggs.",
     target_text="She asked her mom if she could have a new toy.",
     sonar_wrapper=sonar_wrapper,
     generator=generator,
-    n_steps=60,
+    n_steps=30,
     lr=0.02,
     log_every=2,
     n_noise_samples=64,
-    # noise_level=0.06,
-    noise_level=0.05,
-    perplexity_weight=0.01,
+    noise_level=0.03,
+    # noise_level=0.05,
+    perplexity_weight=0.00,
     accum_steps=1,
     verbose=True,
+    use_llm_rephrase=True,
 )
 
 #%%

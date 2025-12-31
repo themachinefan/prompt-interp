@@ -9,6 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
+# Environment variables (API keys)
+.env
+
 # Large model files (6.8GB)
 models/
 
