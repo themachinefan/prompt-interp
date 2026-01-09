@@ -2,6 +2,8 @@
 """Feature visualization: find embeddings that maximally activate specific neurons in SONAR-LLM."""
 
 import os
+import json
+from datetime import datetime
 import torch
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
@@ -13,8 +15,6 @@ from prompt_interp.generator import SonarLLMGenerator
 from prompt_interp.optimize import (
     project_to_norm,
     predict_next_embedding,
-    decoder_ce_loss,
-    tokenize_for_decoder,
 )
 
 # Load API key from .env file (create .env with OPENAI_API_KEY=sk-...)
@@ -181,10 +181,10 @@ def run_feature_visualization(
     verbose: bool = True,
     n_noise_samples: int = 7,
     noise_level: float = 0.03,
-    perplexity_weight: float = 0.0,
     accum_steps: int = 1,
     use_llm_rephrase: bool = False,
     llm_rephrase_every: int = 1,
+    output_dir: str | None = "feature_vis_results",
 ) -> dict:
     """
     Find z that maximally activates a specific neuron in SONAR-LLM.
@@ -201,10 +201,10 @@ def run_feature_visualization(
         verbose: Print progress
         n_noise_samples: Number of noisy samples per step
         noise_level: Noise magnitude (relative to norm)
-        perplexity_weight: Weight for perplexity regularization
         accum_steps: Gradient accumulation steps
         use_llm_rephrase: If True, use GPT-5.2 to correct decoded_z before re-encoding
         llm_rephrase_every: Apply LLM rephrasing every N steps (default 1 = every step)
+        output_dir: Directory to save results JSON (None to disable saving)
 
     Returns:
         Dict with final_z, final_activation, trajectory, etc.
@@ -259,12 +259,6 @@ def run_feature_visualization(
         for step in range(n_steps):
             optimizer.zero_grad()
 
-            # Compute perplexity loss (using decoded_z from previous roundtrip, or init)
-            z_tokens = tokenize_for_decoder(decoded_z, sonar_wrapper).unsqueeze(0)
-            z_ppl_loss = decoder_ce_loss(z, z_tokens, sonar_wrapper)
-            ppl_weight = perplexity_weight * (step / (n_steps - 1)) if n_steps > 1 else perplexity_weight
-            (ppl_weight * z_ppl_loss).backward(retain_graph=True)
-
             # Accumulate gradients over multiple forward passes
             total_activation = 0.0
             for accum_idx in range(accum_steps):
@@ -309,7 +303,6 @@ def run_feature_visualization(
                     label=f"Step {step:3d}",
                     verbose=False,  # We'll print manually to include intermediate stages
                 )
-                z_perplexity: float = torch.exp(z_ppl_loss).item()
                 # Track LLM rephrasing for logging
                 did_rephrase = use_llm_rephrase and step % llm_rephrase_every == 0
                 llm_changed: bool = decoded_z_raw != decoded_z
@@ -327,15 +320,13 @@ def run_feature_visualization(
                 trajectory.append({
                     "step": step,
                     "activation": current_activation,
-                    "z_ppl_loss": z_ppl_loss.item(),
                     "decoded_z": decoded_after_enc,
                     "decoded_pred": decoded_pred,
-                    "z_perplexity": z_perplexity,
                     "did_llm_rephrase": did_rephrase,
                 })
 
                 if verbose:
-                    print(f"Step {step:3d} | activation={current_activation:.4f} | z_ppl={z_perplexity:.1f}")
+                    print(f"Step {step:3d} | activation={current_activation:.4f}")
                     print(f"    after opt:     \"{decoded_after_opt}\"")
                     print(f"    after proj:    \"{decoded_after_proj}\"")
                     if did_rephrase:
@@ -396,7 +387,7 @@ def run_feature_visualization(
         plt.tight_layout()
         plt.show()
 
-        return {
+        results = {
             "init_text": init_text,
             "layer_idx": layer_idx,
             "neuron_idx": neuron_idx,
@@ -411,7 +402,31 @@ def run_feature_visualization(
             "best_prompt_after_llm": best_prompt_after_llm if use_llm_rephrase else None,
             "best_pred_after_llm": best_pred_after_llm if use_llm_rephrase else None,
             "trajectory": trajectory,
+            # Hyperparameters for reproducibility
+            "hyperparameters": {
+                "n_steps": n_steps,
+                "lr": lr,
+                "n_noise_samples": n_noise_samples,
+                "noise_level": noise_level,
+                "accum_steps": accum_steps,
+                "use_llm_rephrase": use_llm_rephrase,
+                "llm_rephrase_every": llm_rephrase_every,
+            },
+            "timestamp": datetime.now().isoformat(),
         }
+
+        # Save results to disk
+        if output_dir is not None:
+            os.makedirs(output_dir, exist_ok=True)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"layer{layer_idx}_neuron{neuron_idx}_{timestamp}.json"
+            filepath = os.path.join(output_dir, filename)
+            with open(filepath, "w") as f:
+                json.dump(results, f, indent=2)
+            if verbose:
+                print(f"\nResults saved to: {filepath}")
+
+        return results
 
     finally:
         # Always clean up the hook
@@ -447,7 +462,6 @@ hi = run_feature_visualization(
     log_every=2,
     n_noise_samples=64,
     noise_level=0.05,
-    perplexity_weight=0.00,
     accum_steps=1,
     verbose=True,
     use_llm_rephrase=True,
