@@ -84,7 +84,10 @@ print()
 # Set input text here (edit this line to test different inputs)
 # text = "Once upon a time, there was a little girl named Lily. She loved to play in the garden."
 # text = "Mrs. Gladys wanted to buy eggs. She sold them."
-text = "The lady wanted to buy eggs for women to cook food."
+# text = "The lady wanted to buy eggs for women to cook food."
+# text = "Mrs. Og Yag wanted to buy eggs to buy eggs"
+# text = "Mrs. Og Yag wanted to buy eggs."
+text = "Mary wanted a new doll and a new thing at school, but instead she had a new toy."
 
 test_sonar_llm(text, sonar_wrapper, generator, segment=False)
 

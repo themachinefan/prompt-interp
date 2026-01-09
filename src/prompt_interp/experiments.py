@@ -41,9 +41,16 @@ def rephrase_with_llm(text: str, client: OpenAI | None) -> str:
                         "random punctuation, incomplete words, or nonsensical fragments. Your task is to:\n"
                         "1. Remove stray punctuation like ), \", ', etc.\n"
                         "2. Fix incomplete or garbled words\n"
-                        "3. Delete pointless or nonsensical repetitions (e.g. 'shop shop shop shop' -> 'shop') (eg. 'Lygia wanted to buy eggs for eggs' -> 'Lygia wanted to buy eggs' \n"
+                        "3. Delete pointless or nonsensical repetitions (e.g. 'shop shop shop shop' -> 'shop') \n"
                         "4. Make it a somewhat coherent, grammatically correct English sentence\n"
                         "5. Keep the meaning and wording as close to the original as possible while editing it to be correct English\n"
+                        "Examples:\n"
+                        "Input: 'She went to the shop shop shop shop.' -> Output: 'She went to the shop.'\n"
+                        "Input: 'Lygia wanted to buy eggs for eggs' -> Output: 'Lygia wanted to buy eggs'\n"
+                        "Input: 'Mrs. Og Yag wanted to buy eggs to buy eggs.' -> Output: 'Mrs. Og Yag wanted to buy eggs.'\n"
+                        "Input: 'Mrs. Shepp wanted to buy eggs that she was for sale.' -> Output: 'Mrs. Shepp wanted to buy eggs that were for sale.'\n"
+                        "Input: 'Ms. Shep bought eggs at the store. In the shop. I bought aga.' -> Output: 'Ms. Shep bought eggs at the store. In the shop I bought again.'\n"
+                        "Input: 'Mary wanted a new doll and a new thing at school, but she had a new toy.' -> Output: 'Mary wanted a new doll and a new thing at school, but instead she had a new toy.'\n"
                         "Return ONLY the corrected sentence, nothing else. If the input is already "
                         "correct, return it unchanged."
                     ),
@@ -290,16 +297,17 @@ for p in generator.parameters():
 run_next_sentence_experiment(
     init_text="I like cheese.",
     # context_text="She is going to the shop to buy eggs",
-    target_text="She went to the shop to buy eggs.",
+    # target_text="She went to the shop to buy eggs.",
     # target_text="She asked her mom if she could have a new toy.",
+    target_text="It was a nice day, but a bit too hot.",
     sonar_wrapper=sonar_wrapper,
     generator=generator,
-    n_steps=30,
+    n_steps=61,
     lr=0.02,
     log_every=2,
     n_noise_samples=64,
-    noise_level=0.03,
-    # noise_level=0.05,
+    # noise_level=0.03,
+    noise_level=0.05,
     perplexity_weight=0.00,
     accum_steps=1,
     verbose=True,
