@@ -16,7 +16,9 @@ from datetime import datetime
 from prompt_interp import REPO_ROOT
 
 DEFAULT_RESULTS_DIR = REPO_ROOT / "results" / "feature_vis"
-DEFAULT_PLOTS_DIR = REPO_ROOT / "results" / "feature_vis_plots"
+DEFAULT_EPO_RESULTS_DIR = REPO_ROOT / "results" / "feature_vis_epo"
+# DEFAULT_PLOTS_DIR = REPO_ROOT / "results" / "feature_vis_plots"
+DEFAULT_EPO_PLOTS_DIR = REPO_ROOT / "results" / "feature_vis_epo_plots"
 
 
 def load_results_for_neuron(
@@ -50,24 +52,52 @@ def extract_top_prompts_per_seed(results: list[dict], top_k_per_seed: int = 3) -
     prompts_by_seed: dict[str, list[dict]] = {}
 
     for result in results:
-        init_text = result["init_text"]
+        # Handle both formats: new format has init_text, old EPO format doesn't
+        init_text = result.get("init_text")
+        if init_text is None:
+            # Old EPO format: derive from filename or use generic label
+            source_file = result.get("source_file", "")
+            if "epo_" in source_file:
+                init_text = f"EPO run ({Path(source_file).stem})"
+            else:
+                init_text = f"Unknown ({Path(source_file).stem})" if source_file else "Unknown"
+
         if init_text not in prompts_by_seed:
             prompts_by_seed[init_text] = []
 
-        # Extract from trajectory - all logged steps have activation_diff
+        # Extract from trajectory - handle both old EPO format and new format
         for step in result.get("trajectory", []):
-            activation = step["activation"]
-            layer_mean = step.get("layer_mean_activation", 0)
-            activation_diff = step.get("activation_diff", activation - layer_mean)
+            # Handle different trajectory formats
+            if "decoded_z" in step:
+                # New format (feature_visualization.py and updated EPO)
+                prompt_text = step["decoded_z"]
+                pred_text = step.get("decoded_pred", "")
+                activation = step["activation"]
+                layer_mean = step.get("layer_mean_activation", 0)
+                activation_diff = step.get("activation_diff", activation - layer_mean)
+                step_num = step["step"]
+                did_rephrase = step.get("did_llm_rephrase", False)
+            elif "best_text" in step:
+                # Old EPO format
+                prompt_text = step["best_text"]
+                pred_text = ""  # Old format didn't store predictions
+                activation = step.get("best_activation", 0)
+                layer_mean = 0  # Old format didn't store layer mean
+                activation_diff = step.get("best_activation_diff", activation)
+                step_num = step.get("iteration", 0)
+                did_rephrase = False
+            else:
+                continue  # Skip unknown format
+
             prompts_by_seed[init_text].append({
-                "prompt": step["decoded_z"],
-                "prediction": step["decoded_pred"],
+                "prompt": prompt_text,
+                "prediction": pred_text,
                 "activation": activation,
                 "layer_mean_activation": layer_mean,
                 "activation_diff": activation_diff,
-                "source": f"step_{step['step']}",
+                "source": f"step_{step_num}",
                 "init_text": init_text,
-                "did_llm_rephrase": step.get("did_llm_rephrase", False),
+                "did_llm_rephrase": did_rephrase,
             })
 
     # For each seed: deduplicate, sort by activation_diff, take top_k_per_seed
@@ -212,10 +242,12 @@ def create_heatmap_by_seed(
 
 #%%
 # Configuration - edit these values
-layer_idx = 14
-neuron_idx = 105
-results_dir = DEFAULT_RESULTS_DIR
-plots_dir = DEFAULT_PLOTS_DIR
+layer_idx = 10
+neuron_idx = 101
+# results_dir = DEFAULT_RESULTS_DIR
+results_dir = DEFAULT_EPO_RESULTS_DIR
+# plots_dir = DEFAULT_PLOTS_DIR
+plots_dir = DEFAULT_EPO_PLOTS_DIR
 top_k_per_seed = 3
 
 # Load and visualize results
